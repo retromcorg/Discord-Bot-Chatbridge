@@ -1,0 +1,5 @@
+name: DiscordBot
+main: com.johnymuffin.discordbot.DiscordBot
+author: JohnyMuffin
+version: 1.0
+depend: [DiscordCore]
