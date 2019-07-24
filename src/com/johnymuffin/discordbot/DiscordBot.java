@@ -8,6 +8,12 @@ import org.bukkit.plugin.EventExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
 import com.johnymuffin.discordcore.DiscordCore;
 
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GenericGuildMessageEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.EventListener;
+
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -16,7 +22,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.Event.Priority;
 import org.bukkit.event.Event.Type;
 
-public class DiscordBot extends JavaPlugin implements Listener, EventExecutor {
+public class DiscordBot extends JavaPlugin implements Listener, EventExecutor, EventListener {
 	Logger logger;
 	DiscordCore discord;
 	String gameBridge = "";
@@ -57,13 +63,14 @@ public class DiscordBot extends JavaPlugin implements Listener, EventExecutor {
 		serverName = this.configReader.getServerName();
 		if (!gameBridge.isEmpty() && !serverName.isEmpty()) {
 			botEnabled = true;
-		} else  {
+		} else {
 			this.logger.info("---------------------------[DiscordBot]---------------------------");
 			this.logger.info("Please provide a Servername and Channel for the Link");
 			this.logger.info("------------------------------------------------------------------");
 		}
-		
+
 		discord.Discord().DiscordSendToChannel(gameBridge, "**SERVER HAS STARTED** :yes:");
+		discord.Discord().jda.addEventListener(this);
 
 	}
 
@@ -95,5 +102,25 @@ public class DiscordBot extends JavaPlugin implements Listener, EventExecutor {
 			}
 
 		}
+	}
+
+	@Override
+	public void onEvent(net.dv8tion.jda.core.events.Event event) {
+		// TODO Auto-generated method stub
+		if(event instanceof GuildMessageReceivedEvent) {
+			System.out.println(((GuildMessageReceivedEvent) event).getMessage().getContentRaw());
+			if (((GuildMessageReceivedEvent) event).getAuthor().isBot() || ((GuildMessageReceivedEvent) event).getAuthor().isFake())
+				return;
+			TextChannel textChannel = discord.Discord().jda.getTextChannelById(gameBridge);
+			String[] messageCMD = ((GuildMessageReceivedEvent) event).getMessage().getContentRaw().split(" ");
+			if (((GenericGuildMessageEvent) event).getChannel() == textChannel) {
+				String message = ((GuildMessageReceivedEvent) event).getMessage().getContentRaw();
+				User author = ((GuildMessageReceivedEvent) event).getAuthor();
+				message = "&f[&6Discord&f]&7" + author.getName() + ": " + message;
+				message = message.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+				Bukkit.getServer().broadcastMessage(message);
+			}
+		}
+		
 	}
 }
