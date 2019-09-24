@@ -1,5 +1,5 @@
 # Discord-Bot-Chatbridge
-A Discord Chat Bridge that uses https://github.com/RhysB/Retro-Bot
+A Discord Chat Bridge that uses https://github.com/RhysB/Discord-Bot-Core
 
 
 # Setup
