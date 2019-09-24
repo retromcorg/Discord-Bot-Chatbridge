@@ -1,13 +1,10 @@
-package com.johnymuffin.discordbot;
+package com.johnymuffin.discordGameBridge;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.bukkit.Bukkit;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 class ConfigReader {
 	// New Config
