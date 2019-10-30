@@ -83,8 +83,9 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
                 public void run() {
                     if (jda.getStatus() == JDA.Status.CONNECTED) {
                         // There's no good way to announce the server was stopped as of now.
-                        if(configReader.canAnnounceStartStop() && !botEnabled) {
-                            quickSend("**SERVER HAS STARTED**");
+                        if(!botEnabled) {
+                            if(configReader.canAnnounceStartStop())
+                                quickSend("**SERVER HAS STARTED**");
                             jda.addEventListener(this);
                             botEnabled = true;
                         }
