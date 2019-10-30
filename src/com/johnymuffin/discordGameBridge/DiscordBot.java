@@ -33,7 +33,6 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
     Boolean botEnabled = false;
     private ConfigReader configReader;
     private int taskId = 0;
-    private DiscordBot plugin;
 
     public static final String PLUGIN_FOLDER = "./plugins/DiscordBot";
     private File pluginFolder = new File("./plugins/DiscordBot");
@@ -55,34 +54,41 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
         }
     }
 
+    private void quickSend(String s) {
+        discord.Discord().DiscordSendToChannel(gameBridge, s);
+    }
+
     public void onEnable() {
         this.configReader = new ConfigReader(this);
         this.logger = this.getServer().getLogger();
         this.logger.info("[DiscordBot] Enabling DiscordBot...");
         discord = (DiscordCore) getServer().getPluginManager().getPlugin("DiscordCore");
+        JDA jda = discord.Discord().jda;
 
         gameBridge = this.configReader.getChannel();
         serverName = this.configReader.getServerName();
         // Custom Messages
         discordChatMessage = this.configReader.getDiscordChatMessage();
-        if (!gameBridge.isEmpty() && !serverName.isEmpty()) {
-            botEnabled = true;
-            discord.Discord().DiscordSendToChannel(gameBridge, "**SERVER HAS STARTED** :yes:");
-            discord.Discord().jda.addEventListener(this);
-        } else {
+        // Since this didn't work properly, the server start status has been moved down
+        if (gameBridge.isEmpty() || serverName.isEmpty()) {
             this.logger.info("---------------------------[DiscordBot]---------------------------");
-            this.logger.info("Please provide a Servername and Channel for the Link");
+            this.logger.info("Please provide a ServerName and Channel for the Link");
             this.logger.info("------------------------------------------------------------------");
         }
 
-        if (configReader.getPrensencePlayercount() == true) {
+        if (configReader.getPrensencePlayercount()) {
             System.out.println("[DiscordBot] Discord Player Timer Has Started");
             Bukkit.getServer().broadcastMessage("Discord Player Timer Has Started");
             taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
                 public void run() {
-                    if (discord.Discord().jda.getStatus() == JDA.Status.CONNECTED) {
-                        discord.Discord().jda.getPresence().setGame(Game.playing(
-                                serverName + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
+                    if (jda.getStatus() == JDA.Status.CONNECTED) {
+                        // There's no good way to announce the server was stopped as of now.
+                        if(configReader.canAnnounceStartStop() && !botEnabled) {
+                            quickSend("**SERVER HAS STARTED**");
+                            jda.addEventListener(this);
+                            botEnabled = true;
+                        }
+                        jda.getPresence().setGame(Game.playing(serverName + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
                     }
                 }
             }, 0L, 20*60);
@@ -90,16 +96,16 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
 
 
         //Player Events
-        final GamePlayerEvents GamePlayerEvents = new GamePlayerEvents(plugin, discord, configReader);
+        final GamePlayerEvents GamePlayerEvents = new GamePlayerEvents(this, discord, configReader);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, GamePlayerEvents, Priority.Lowest, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, GamePlayerEvents, Priority.Lowest, this);
         getServer().getPluginManager().registerEvent(Type.PLAYER_CHAT, GamePlayerEvents, Priority.Lowest, this);
     }
 
     public void onDisable() {
-        discord.Discord().DiscordSendToChannel(gameBridge, "**SERVER HAS STOPPED** :no:");
+        quickSend("**SERVER HAS STOPPED** :no:");
         this.logger.info("[DiscordBot] Successfully stopped!");
-        // if (configReader.getPrensencePlayercount() == true) {
+        // if (configReader.getPrensencePlayercount()) {
         Bukkit.getServer().getScheduler().cancelTask(taskId);
         // }
     }
@@ -153,27 +159,4 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
         }
 
     }
-
-//    public boolean onCommand(CommandSender cs, Command cmdObj, String label, String[] args) {
-//        String cmd = cmdObj.getName();
-//        if (cmd.equalsIgnoreCase("discordchatreload")) {
-//            if (cs.hasPermission("retro.discordchatreload")) {
-//                this.configReader = new ConfigReader(this);
-//                gameBridge = this.configReader.getChannel();
-//                serverName = this.configReader.getServerName();
-//                // Custom Messages
-//                discordChatMessage = this.configReader.getDiscordChatMessage();
-//                gameChatMessage = this.configReader.getGameChatMessage();
-//                joinMessage = this.configReader.getJoinMessage();
-//                quitMessage = this.configReader.getQuitMessage();
-//                cs.sendMessage("Discord Chat Bridge has been reloaded, please do restart tho when you are done testing");
-//                return true;
-//            } else {
-//                cs.sendMessage(ChatColor.RED + "GG mate, no perms tho :(");
-//                return true;
-//            }
-//        } else {
-//            return false;
-//        }
-//    }
 }
