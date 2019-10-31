@@ -6,19 +6,23 @@ import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
+import ru.tehkode.permissions.PermissionManager;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.util.regex.Pattern;
 
 public class GamePlayerEvents extends PlayerListener {
+    private PermissionManager pex;
     private DiscordBot plugin;
     private DiscordCore dbc;
     private ConfigReader config;
 
     public GamePlayerEvents(DiscordBot instance, DiscordCore plugin, ConfigReader configReader) {
-
         this.plugin = instance;
         this.dbc = plugin;
         this.config = configReader;
+        //PluginManager manager = plugin.getServer().getPluginManager();
+        pex = PermissionsEx.getPermissionManager();
     }
 
     @Override
@@ -42,15 +46,32 @@ public class GamePlayerEvents extends PlayerListener {
         dbc.Discord().DiscordSendToChannel(config.getChannel(), message);
     }
 
+    private String replaceMsg(String trueMsg) {
+        trueMsg = trueMsg.replaceAll(Pattern.quote("@"), " ");
+        trueMsg = trueMsg.replaceAll(Pattern.quote("@everyone"), " ");
+        trueMsg = trueMsg.replaceAll(Pattern.quote("@here"), " ");
+        trueMsg = trueMsg.replaceAll(Pattern.quote("*"), "\\*");
+        trueMsg = trueMsg.replaceAll(Pattern.quote("_"), "\\_");
+        trueMsg = trueMsg.replaceAll(Pattern.quote("|"), "\\|");
+        trueMsg = trueMsg.replaceAll(Pattern.quote("~"), "\\~");
+        return trueMsg;
+    }
+
     @Override
     public void onPlayerChat(PlayerChatEvent event) {
-        String message = config.getGameChatMessage();
         if(!event.isCancelled()) {
+            String message = config.getGameChatMessage();
+            String trueMsg = replaceMsg(event.getMessage());
+            String groupName = "MISSINGPEX";
+            if(pex != null) {
+                String pName = event.getPlayer().getName();
+                groupName = pex.getUser(pName).getGroups()[0].getName();
+                // [0] is always the top hierarchy group that the player has
+            }
+
+            message = message.replaceAll("%group%", groupName);
             message = message.replaceAll("%messageAuthor%", event.getPlayer().getName());
-            message = message.replaceAll("%message%", event.getMessage());
-            message = message.replaceAll(Pattern.quote("@"), " ");
-            message = message.replaceAll(Pattern.quote("@everyone"), " ");
-            message = message.replaceAll(Pattern.quote("@here"), " ");
+            message = message.replaceAll("%message%", trueMsg);
             dbc.Discord().DiscordSendToChannel(config.getChannel(), message);
         }
     }
