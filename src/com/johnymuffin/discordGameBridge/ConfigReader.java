@@ -7,97 +7,97 @@ import java.io.IOException;
 import java.util.Properties;
 
 class ConfigReader {
-	// New Config
-	
-	//discord.Discord().DiscordSendToChannel(gameBridge,
-	//"**" + ((PlayerJoinEvent) event).getPlayer().getName() + "** Has Joined The Game ["
-	//+ Bukkit.getServer().getOnlinePlayers().length + "/"
-	//+ Bukkit.getServer().getMaxPlayers() + "]");
+    // New Config
 
-	private static String discordChatMessage = "&f[&6Discord&f]&7 %messageAuthor%: %message%";
-	private static String gameChatMessage = "**%messageAuthor%**: %message%";
-	private static String joinMessage = "**%username%** Has Joined THe Game [%onlineCount%/%maxCount%]";
-	private static String quitMessage = "**%username%** Has Quit THe Game [%onlineCount%/%maxCount%]";
-	
-	private static String serverName = "";
-	private static String channelID = "";
-	private static Boolean PrensencePlayercount = Boolean.TRUE;
-	private static Boolean OnlineCommand = Boolean.TRUE;
+    //discord.Discord().DiscordSendToChannel(gameBridge,
+    //"**" + ((PlayerJoinEvent) event).getPlayer().getName() + "** Has Joined The Game ["
+    //+ Bukkit.getServer().getOnlinePlayers().length + "/"
+    //+ Bukkit.getServer().getMaxPlayers() + "]");
 
-	ConfigReader(DiscordBot instance) {
-		Properties prop = new Properties();
+    private String discordChatMessage = "&f[&6Discord&f]&7 %messageAuthor%: %message%";
+    private String gameChatMessage = "**%messageAuthor%**: %message%";
+    private String joinMessage = "**%username%** Has Joined THe Game [%onlineCount%/%maxCount%]";
+    private String quitMessage = "**%username%** Has Quit THe Game [%onlineCount%/%maxCount%]";
 
-		try {
-			prop.load(new FileInputStream(instance.config));
-		} catch (FileNotFoundException var4) {
-			instance.logger.warning("[RetroBot] No properties found! Making new file...");
-			var4.printStackTrace();
-		} catch (IOException var5) {
-			var5.printStackTrace();
-		}
-		// New Config
-		serverName = prop.getProperty("serverName", serverName);
-		channelID = prop.getProperty("channelID", channelID);
-		PrensencePlayercount = Boolean.valueOf(Boolean.parseBoolean(prop.getProperty("PrensencePlayercount", "" + PrensencePlayercount)));
-		OnlineCommand = Boolean.valueOf(Boolean.parseBoolean(prop.getProperty("OnlineCommand", "" + OnlineCommand)));
-		//Join Custom Message
-		joinMessage = prop.getProperty("joinMessage", joinMessage);
-		prop.setProperty("joinMessage", joinMessage);
-		//Quit Custom Message
-		quitMessage = prop.getProperty("quitMessage", quitMessage);
-		prop.setProperty("quitMessage", quitMessage);
-		//Discord Chat Message
-		discordChatMessage = prop.getProperty("discordChatMessage", discordChatMessage);
-		prop.setProperty("discordChatMessage", discordChatMessage);
-		//Game Chat Message
-		gameChatMessage = prop.getProperty("gameChatMessage", gameChatMessage);
-		prop.setProperty("gameChatMessage", gameChatMessage);
-		
-		prop.setProperty("OnlineCommand", "" + OnlineCommand);
-		prop.setProperty("PrensencePlayercount", "" + PrensencePlayercount);
-		prop.setProperty("channelID", channelID);
-		prop.setProperty("serverName", serverName);
+    private String serverName = "";
+    private String channelID = "";
+    private Boolean PrensencePlayercount = true;
+    private Boolean OnlineCommand = true;
+    private boolean announceStartStop = true;
 
-		try {
-			prop.store(new FileOutputStream(instance.config), "Properties for DiscordBot");
-		} catch (Exception var3) {
-			instance.logger.severe("Failed to save properties for RetroBot!");
-			var3.printStackTrace();
-		}
-	}
+    ConfigReader(DiscordBot instance) {
+        Properties prop = new Properties();
 
-	String getServerName() {
-		return serverName;
-	}
-	
-	String getChannel() {
-		return channelID;
-	}
-	
-	String getJoinMessage() {
-		return joinMessage;
-	}
-	String getQuitMessage() {
-		return quitMessage;
-	}
-	String getDiscordChatMessage() {
-		return discordChatMessage;
-	}
-	String getGameChatMessage() {
-		return gameChatMessage;
-	}
-	
-	Boolean getPrensencePlayercount() {
-		return PrensencePlayercount;
-		
-	}
-	Boolean getOnlineCommand() {
-		return OnlineCommand;
-		
-	}
+        try {
+            prop.load(new FileInputStream(instance.config));
+        } catch (IOException var4) {
+            instance.logger.warning("[RetroBot] No properties found! Making new file...");
+            var4.printStackTrace();
+        }
+        // New Config
+        serverName = prop.getProperty("serverName", serverName);
+        channelID = prop.getProperty("channelID", channelID);
+        PrensencePlayercount = Boolean.parseBoolean(prop.getProperty("PrensencePlayercount", "" + PrensencePlayercount));
+        OnlineCommand = Boolean.parseBoolean(prop.getProperty("OnlineCommand", "" + OnlineCommand));
+        announceStartStop = Boolean.parseBoolean(prop.getProperty("announceStartStop", "" + announceStartStop));
+        //Join Custom Message
+        joinMessage = prop.getProperty("joinMessage", joinMessage);
+        prop.setProperty("joinMessage", joinMessage);
+        //Quit Custom Message
+        quitMessage = prop.getProperty("quitMessage", quitMessage);
+        prop.setProperty("quitMessage", quitMessage);
+        //Discord Chat Message
+        discordChatMessage = prop.getProperty("discordChatMessage", discordChatMessage);
+        prop.setProperty("discordChatMessage", discordChatMessage);
+        //Game Chat Message
+        gameChatMessage = prop.getProperty("gameChatMessage", gameChatMessage);
+        prop.setProperty("gameChatMessage", gameChatMessage);
+        //Announce Server Start/Stop
 
-	void onDisable() {
-		channelID = null;
-		serverName = null;
-	}
+        prop.setProperty("OnlineCommand", "" + OnlineCommand);
+        prop.setProperty("PrensencePlayercount", "" + PrensencePlayercount);
+        prop.setProperty("channelID", channelID);
+        prop.setProperty("serverName", serverName);
+        prop.setProperty("announceStartStop", ""+announceStartStop);
+
+        try {
+            prop.store(new FileOutputStream(instance.config), "Properties for DiscordBot");
+        } catch (Exception var3) {
+            instance.logger.severe("Failed to save properties for RetroBot!");
+            var3.printStackTrace();
+        }
+    }
+
+    String getServerName() {
+        return this.serverName;
+    }
+
+    String getChannel() {
+        return this.channelID;
+    }
+
+    String getJoinMessage() {
+        return this.joinMessage;
+    }
+    String getQuitMessage() {
+        return this.quitMessage;
+    }
+    String getDiscordChatMessage() {
+        return this.discordChatMessage;
+    }
+    String getGameChatMessage() {
+        return this.gameChatMessage;
+    }
+
+    Boolean getPrensencePlayercount() {
+        return this.PrensencePlayercount;
+
+    }
+    Boolean getOnlineCommand() {
+        return this.OnlineCommand;
+    }
+
+    boolean canAnnounceStartStop() {
+        return announceStartStop;
+    }
 }
