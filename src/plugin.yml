@@ -1,5 +1,6 @@
 name: DiscordBot
 main: com.johnymuffin.discordGameBridge.DiscordBot
-author: JohnyMuffin
-version: 1.4
+author: [JohnyMuffin, Ashleyz]
+version: 1.4.2
 depend: [DiscordCore]
+softdepend: [PermissionsEx]
