@@ -1,0 +1,12 @@
+name: Discordbot
+version: ${project.version}
+main: com.johnymuffin.discordGameBridge.DiscordBot
+depend:
+  - DiscordCore
+softdepend:
+  - PermissionsEx
+  - Essentials
+
+commands:
+  DiscordBridge:
+    description: "Command for DiscordBridge"
