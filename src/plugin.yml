@@ -1,5 +1,0 @@
-name: DiscordBot
-main: com.johnymuffin.discordGameBridge.DiscordBot
-author: JohnyMuffin
-version: 1.4
-depend: [DiscordCore]
