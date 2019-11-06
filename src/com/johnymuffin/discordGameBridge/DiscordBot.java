@@ -1,5 +1,6 @@
 package com.johnymuffin.discordGameBridge;
 
+import com.earth2me.essentials.Essentials;
 import com.johnymuffin.discordcore.DiscordCore;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.JDA;
@@ -31,8 +32,10 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
     private String discordChatMessage = "";
 
     private static Boolean botEnabled = false;
-    private ConfigReader configReader;
+    ConfigReader configReader;
     private int taskId = 0;
+
+    private Essentials ess;
 
     public static final String PLUGIN_FOLDER = "./plugins/DiscordBot";
     private File pluginFolder = new File("./plugins/DiscordBot");
@@ -66,11 +69,13 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
 
     private GamePlayerEvents events;
     public void onEnable() {
-        this.configReader = new ConfigReader(this);
+        this.configReader = new ConfigReader();
         this.logger = this.getServer().getLogger();
         this.logger.info("[DiscordBot] Enabling DiscordBot...");
         discord = (DiscordCore) getServer().getPluginManager().getPlugin("DiscordCore");
         JDA jda = discord.Discord().jda;
+
+        this.getCommand("discordbridge").setExecutor(new Cmd_DiscordBridge());
 
         gameBridge = this.configReader.getChannel();
         serverName = this.configReader.getServerName();
@@ -84,7 +89,7 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
         }
 
 
-        if (configReader.getPrensencePlayercount()) {
+        if (configReader.getPresencePlayercount()) {
             System.out.println("[DiscordBot] Discord Player Timer Has Started");
             Bukkit.getServer().broadcastMessage("Discord Player Timer Has Started");
             taskId = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
@@ -94,7 +99,7 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
                         if(!botEnabled) {
                             botEnabled = true;
                             if(configReader.canAnnounceStartStop())
-                                quickSend("**SERVER HAS STARTED**");
+                                quickSend(configReader.getDiscordStartMessage());
                             jda.addEventListener(instance);
                         }
                         jda.getPresence().setGame(Game.playing(serverName + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
@@ -114,7 +119,7 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
     public void onDisable() {
         quickSend("**SERVER HAS STOPPED**");
         this.logger.info("[DiscordBot] Successfully stopped!");
-        // if (configReader.getPrensencePlayercount()) {
+        // if (configReader.getPresencePlayercount()) {
         Bukkit.getServer().getScheduler().cancelTask(taskId);
         discord.Discord().jda.removeEventListener(this);
         // }
@@ -142,7 +147,10 @@ public class DiscordBot extends JavaPlugin implements Listener, EventListener {
                     message = message.replaceAll("%message%",
                             ((GuildMessageReceivedEvent) event).getMessage().getContentRaw());
                     message = message.replaceAll("(&([a-f0-9]))", "\u00A7$2");
-                    Bukkit.getServer().broadcastMessage(message);
+                    Player[] players = Bukkit.getServer().getOnlinePlayers();
+                    for(Player player : players) {
+                        player.sendRawMessage(message);
+                    }
                 }
 
             } else if ((messageCMD[0].equalsIgnoreCase("!online")) && (configReader.getOnlineCommand())) {
