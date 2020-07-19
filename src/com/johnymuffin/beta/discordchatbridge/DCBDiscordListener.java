@@ -30,23 +30,9 @@ public class DCBDiscordListener extends ListenerAdapter {
 
         String gameBridgeChannelID = plugin.getConfig().getConfigString("channel-id");
         String[] messageCMD = event.getMessage().getContentRaw().split(" ");
-        //Is the message in the game bridge channel
-        if (event.getChannel().getId().equalsIgnoreCase(gameBridgeChannelID)) {
-            String displayName;
-            if (event.getMember().getNickname() != null) {
-                displayName = event.getMember().getNickname();
-            } else {
-                displayName = event.getAuthor().getName();
-            }
 
-            String chatMessage = plugin.getConfig().getConfigString("message.discord-chat-message");
-            chatMessage = chatMessage.replace("%messageAuthor%", displayName);
-            chatMessage = chatMessage.replace("%message%", event.getMessage().getContentDisplay());
-            chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
-            Bukkit.broadcastMessage(chatMessage);
-            return;
-        }
-        if(messageCMD[0].equalsIgnoreCase("!online") && plugin.getConfig().getConfigBoolean("online-command-enabled")) {
+        //Online Command
+        if (messageCMD[0].equalsIgnoreCase("!online") && plugin.getConfig().getConfigBoolean("online-command-enabled")) {
             String onlineMessage = "**The online players are:** ";
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                 onlineMessage += p.getName() + ", ";
@@ -65,7 +51,24 @@ public class DCBDiscordListener extends ListenerAdapter {
                     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
 
             event.getChannel().sendMessage(eb.build()).queue();
+            return;
+        }
 
+        //Is the message in the game bridge channel
+        if (event.getChannel().getId().equalsIgnoreCase(gameBridgeChannelID)) {
+            String displayName;
+            if (event.getMember().getNickname() != null) {
+                displayName = event.getMember().getNickname();
+            } else {
+                displayName = event.getAuthor().getName();
+            }
+
+            String chatMessage = plugin.getConfig().getConfigString("message.discord-chat-message");
+            chatMessage = chatMessage.replace("%messageAuthor%", displayName);
+            chatMessage = chatMessage.replace("%message%", event.getMessage().getContentDisplay());
+            chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            Bukkit.broadcastMessage(chatMessage);
+            return;
         }
 
 
