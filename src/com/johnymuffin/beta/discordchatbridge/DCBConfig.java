@@ -23,8 +23,8 @@ public class DCBConfig extends Configuration {
         generateConfigOption("online-command-enabled", true);
         generateConfigOption("message.discord-chat-message", "&f[&6Discord&f]&7 %messageAuthor%: %message%");
         generateConfigOption("message.game-chat-message", "**%messageAuthor%**: %message%");
-        generateConfigOption("message.join-message", "**%username%** Has Joined THe Game [%onlineCount%/%maxCount%]");
-        generateConfigOption("message.quit-message", "**%username%** Has Quit THe Game [%onlineCount%/%maxCount%]");
+        generateConfigOption("message.join-message", "**%username%** Has Joined The Game [%onlineCount%/%maxCount%]");
+        generateConfigOption("message.quit-message", "**%username%** Has Quit The Game [%onlineCount%/%maxCount%]");
 
 
     }
