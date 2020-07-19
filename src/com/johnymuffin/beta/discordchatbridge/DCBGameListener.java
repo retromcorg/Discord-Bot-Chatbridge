@@ -18,18 +18,18 @@ public class DCBGameListener extends PlayerListener {
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
         String chatMessage = plugin.getConfig().getConfigString("message.join-message");
-        chatMessage.replace("%username%", event.getPlayer().getName());
-        chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length));
-        chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
+        chatMessage = chatMessage.replace("%username%", event.getPlayer().getName());
+        chatMessage = chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length));
+        chatMessage = chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
         plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
     }
 
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
         String chatMessage = plugin.getConfig().getConfigString("message.quit-message");
-        chatMessage.replace("%username%", event.getPlayer().getName());
-        chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length - 1));
-        chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
+        chatMessage = chatMessage.replace("%username%", event.getPlayer().getName());
+        chatMessage = chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length - 1));
+        chatMessage = chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
         plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
     }
 

@@ -1,6 +1,8 @@
 package com.johnymuffin.beta.discordchatbridge;
 
 import com.johnymuffin.discordcore.DiscordCore;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Activity;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -20,6 +22,7 @@ public class DiscordChatBridge extends JavaPlugin {
     //Other plugin stuff
     private DCBDiscordListener discordListener; //Discord Listener
     private boolean enabled = false;
+    private Integer taskID = null;
 
     @Override
     public void onEnable() {
@@ -58,9 +61,18 @@ public class DiscordChatBridge extends JavaPlugin {
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, gameListener, Event.Priority.Monitor, this);
 
 
-
         enabled = true;
 
+
+        if (dcbConfig.getConfigBoolean("presence-player-count")) {
+            taskID = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
+                if (getDiscordCore().getDiscordBot().jda.getStatus() == JDA.Status.CONNECTED) {
+                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(plugin.getConfig().getConfigString("server-name") + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
+                }
+
+
+            }, 0L, 20 * 60);
+        }
 
     }
 
@@ -69,6 +81,7 @@ public class DiscordChatBridge extends JavaPlugin {
         if (enabled) {
             logger(Level.INFO, "Disabling.");
             discordCore.getDiscordBot().jda.removeEventListener(discordListener);
+            Bukkit.getServer().getScheduler().cancelTask(taskID);
         }
         logger(Level.INFO, "Has been disabled.");
     }
