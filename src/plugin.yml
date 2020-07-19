@@ -1,12 +1,8 @@
-name: Discordbot
-author: [JohnyMuffin, Ashleyz]
-version: 1.5
-main: com.johnymuffin.discordGameBridge.DiscordBot
-depend:
-  - DiscordCore
+name: DiscordChatBridge
+authors:
+  - JohnyMuffin
+  - Ashleyz
+version: 2.0.0
+main: com.johnymuffin.beta.discordchatbridge.DiscordChatBridge
 softdepend:
-  - PermissionsEx
-  - Essentials
-commands:
-  DiscordBridge:
-    description: "Command for DiscordBridge"
+  - DiscordCore
