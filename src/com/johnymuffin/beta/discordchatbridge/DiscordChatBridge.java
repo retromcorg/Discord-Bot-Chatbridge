@@ -48,17 +48,26 @@ public class DiscordChatBridge extends JavaPlugin {
             Bukkit.getServer().getPluginManager().disablePlugin(plugin);
             return;
         }
+        if (dcbConfig.getConfigBoolean("webhook.use-webhook")) {
+            if (dcbConfig.getConfigString("webhook.url") == null || dcbConfig.getConfigString("webhook.url").isEmpty() || dcbConfig.getConfigString("webhook.url").equalsIgnoreCase("url")) {
+                log.info("}----------------------------ERROR----------------------------{");
+                this.log.info("Please provide a valid Discord Webhook url");
+                log.info("}----------------------------ERROR----------------------------{");
+                Bukkit.getServer().getPluginManager().disablePlugin(plugin);
+                return;
+            }
+        }
 
         //Discord Core
         discordCore = (DiscordCore) Bukkit.getServer().getPluginManager().getPlugin("DiscordCore");
         //Discord Listener
-        final DCBDiscordListener discordListener = new DCBDiscordListener(plugin);
+        discordListener = new DCBDiscordListener(plugin);
         discordCore.getDiscordBot().jda.addEventListener(discordListener);
         //Discord Game Bridge
         final DCBGameListener gameListener = new DCBGameListener(plugin);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, gameListener, Event.Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, gameListener, Event.Priority.Monitor, this);
-        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, gameListener, Event.Priority.Monitor, this);
+        getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, gameListener, Event.Priority.Highest, this);
 
 
         enabled = true;
@@ -88,7 +97,7 @@ public class DiscordChatBridge extends JavaPlugin {
 
 
     public void logger(Level level, String message) {
-        Bukkit.getLogger().log(level, "[" + pluginName + "] " + message);
+        log.log(level, "[" + pluginName + "] " + message);
     }
 
     public DCBConfig getConfig() {

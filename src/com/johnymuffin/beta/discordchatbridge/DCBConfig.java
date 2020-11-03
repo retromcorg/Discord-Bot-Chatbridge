@@ -25,6 +25,10 @@ public class DCBConfig extends Configuration {
         generateConfigOption("message.game-chat-message", "**%messageAuthor%**: %message%");
         generateConfigOption("message.join-message", "**%username%** Has Joined The Game [%onlineCount%/%maxCount%]");
         generateConfigOption("message.quit-message", "**%username%** Has Quit The Game [%onlineCount%/%maxCount%]");
+        //Webhook
+        generateConfigOption("webhook.use-webhook", false);
+        generateConfigOption("webhook.url", "url");
+        generateConfigOption("webhook.info", "This option when configured with webhook and enabled allows for messages posted by the bot to use a players avatar and username.");
 
 
     }

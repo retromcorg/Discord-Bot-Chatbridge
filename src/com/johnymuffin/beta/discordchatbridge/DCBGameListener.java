@@ -6,6 +6,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerListener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import java.io.IOException;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 public class DCBGameListener extends PlayerListener {
@@ -38,13 +40,35 @@ public class DCBGameListener extends PlayerListener {
         if (event.isCancelled()) {
             return;
         }
-        String chatMessage = plugin.getConfig().getConfigString("message.game-chat-message");
-        chatMessage = chatMessage.replace("%messageAuthor%", event.getPlayer().getName());
-        chatMessage = chatMessage.replace("%message%", event.getMessage());
+
+        if (plugin.getConfig().getConfigBoolean("webhook.use-webhook")) {
+            final DiscordWebhook webhookMessage = new DiscordWebhook(plugin.getConfig().getConfigString("webhook.url"));
+            webhookMessage.setUsername(event.getPlayer().getName());
+            webhookMessage.setContent(sanitizeMessage(event.getMessage()));
+            webhookMessage.setAvatarUrl("http://minotar.net/helm/" + event.getPlayer().getName() + "/100.png");
+            webhookMessage.setTts(false);
+            Bukkit.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, () -> {
+                try {
+                    webhookMessage.execute();
+                } catch (IOException exception) {
+                    plugin.logger(Level.INFO, "Failed to send message through webhook to Discord chat channel: " + exception + " : " + exception.getMessage());
+                }
+            }, 0L);
+
+        } else {
+            String chatMessage = plugin.getConfig().getConfigString("message.game-chat-message");
+            chatMessage = chatMessage.replace("%messageAuthor%", event.getPlayer().getName());
+            chatMessage = chatMessage.replace("%message%", event.getMessage());
+            chatMessage = sanitizeMessage(chatMessage);
+            plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
+        }
+    }
+
+    public String sanitizeMessage(String chatMessage) {
         chatMessage = chatMessage.replaceAll(Pattern.quote("@"), " ");
         chatMessage = chatMessage.replaceAll(Pattern.quote("@everyone"), " ");
         chatMessage = chatMessage.replaceAll(Pattern.quote("@here"), " ");
-        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
+        return chatMessage;
     }
 
 }

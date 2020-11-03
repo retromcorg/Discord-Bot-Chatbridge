@@ -67,7 +67,7 @@ public class DCBDiscordListener extends ListenerAdapter {
             chatMessage = chatMessage.replace("%messageAuthor%", displayName);
             chatMessage = chatMessage.replace("%message%", event.getMessage().getContentDisplay());
             chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
-            Bukkit.broadcastMessage(chatMessage);
+            Bukkit.getServer().broadcastMessage(chatMessage);
             return;
         }
 
