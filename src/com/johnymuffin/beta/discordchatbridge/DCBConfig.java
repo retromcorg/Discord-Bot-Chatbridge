@@ -25,6 +25,12 @@ public class DCBConfig extends Configuration {
         generateConfigOption("message.game-chat-message", "**%messageAuthor%**: %message%");
         generateConfigOption("message.join-message", "**%username%** Has Joined The Game [%onlineCount%/%maxCount%]");
         generateConfigOption("message.quit-message", "**%username%** Has Quit The Game [%onlineCount%/%maxCount%]");
+        generateConfigOption("message.require-link", "Sorry, in order to chat from Discord, you must link your in-game account to Discord. You can begin this process by running !link in the bot commands channel.");
+        //Discord-Authentication
+        generateConfigOption("authentication.enabled", false);
+        generateConfigOption("authentication.discord.only-allow-linked-users", true);
+        generateConfigOption("authentication.discord.use-in-game-names-if-available", true);
+
         //Webhook
         generateConfigOption("webhook.use-webhook", false);
         generateConfigOption("webhook.url", "url");

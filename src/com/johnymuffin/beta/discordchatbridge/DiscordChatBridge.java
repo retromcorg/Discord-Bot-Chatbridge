@@ -58,6 +58,15 @@ public class DiscordChatBridge extends JavaPlugin {
             }
         }
 
+        if (dcbConfig.getConfigBoolean("authentication.enabled") && !Bukkit.getServer().getPluginManager().isPluginEnabled("DiscordAuthentication")) {
+            log.info("}---------------ERROR---------------{");
+            log.info("Authentication support is enabled, however, the plugin isn't installed.");
+            log.info("Download it at: https://github.com/RhysB/Discord-Bot-Core");
+            log.info("}---------------ERROR---------------{");
+            Bukkit.getServer().getPluginManager().disablePlugin(plugin);
+            return;
+        }
+
         //Discord Core
         discordCore = (DiscordCore) Bukkit.getServer().getPluginManager().getPlugin("DiscordCore");
         //Discord Listener

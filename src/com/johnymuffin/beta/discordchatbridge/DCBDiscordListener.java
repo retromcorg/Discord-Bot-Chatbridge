@@ -1,5 +1,6 @@
 package com.johnymuffin.beta.discordchatbridge;
 
+import com.johnymuffin.beta.discordauth.DiscordAuthentication;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -56,11 +57,28 @@ public class DCBDiscordListener extends ListenerAdapter {
 
         //Is the message in the game bridge channel
         if (event.getChannel().getId().equalsIgnoreCase(gameBridgeChannelID)) {
-            String displayName;
-            if (event.getMember().getNickname() != null) {
-                displayName = event.getMember().getNickname();
-            } else {
-                displayName = event.getAuthor().getName();
+            String displayName = null;
+
+            if (plugin.getConfig().getConfigBoolean("authentication.enabled")) {
+                DiscordAuthentication authPlugin = (DiscordAuthentication) Bukkit.getServer().getPluginManager().getPlugin("DiscordAuthentication");
+                if (plugin.getConfig().getConfigBoolean("authentication.discord.only-allow-linked-users")) {
+                    if (!authPlugin.getData().isDiscordIDAlreadyLinked(event.getAuthor().getId())) {
+                        event.getChannel().sendMessage(plugin.getConfig().getString("message.require-link")).queue();
+                        return;
+                    }
+                }
+                if (plugin.getConfig().getConfigBoolean("authentication.discord.use-in-game-names-if-available")) {
+                    displayName = authPlugin.getData().getLastUsernameFromDiscordID(event.getAuthor().getId());
+                }
+
+            }
+
+            if (displayName == null) {
+                if (event.getMember().getNickname() != null) {
+                    displayName = event.getMember().getNickname();
+                } else {
+                    displayName = event.getAuthor().getName();
+                }
             }
 
             String chatMessage = plugin.getConfig().getConfigString("message.discord-chat-message");
