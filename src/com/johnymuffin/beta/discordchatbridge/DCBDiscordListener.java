@@ -21,7 +21,7 @@ public class DCBDiscordListener extends ListenerAdapter {
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         //Don't respond to bots
-        if (event.getAuthor().isBot() || event.getAuthor().isFake()) {
+        if (event.getAuthor().isBot() || event.isWebhookMessage()) {
             return;
         }
         //Don't respond to funky messages
