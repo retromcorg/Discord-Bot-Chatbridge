@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.awt.*;
+import java.util.Objects;
 import java.util.Random;
 
 public class DCBDiscordListener extends ListenerAdapter {
@@ -33,7 +34,7 @@ public class DCBDiscordListener extends ListenerAdapter {
         String[] messageCMD = event.getMessage().getContentRaw().split(" ");
 
         //Online Command
-        if (messageCMD[0].equalsIgnoreCase("!online") && plugin.getConfig().getConfigBoolean("online-command-enabled")) {
+        if (messageCMD[0].equalsIgnoreCase("!online") && plugin.getConfig().getConfigBoolean("online-command-enabled") && Objects.equals(plugin.getConfig().getConfigString("bot-command-id"), event.getChannel().getId())) {
             String onlineMessage = "**The online players are:** ";
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
                 onlineMessage += p.getName() + ", ";
