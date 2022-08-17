@@ -90,7 +90,7 @@ public class DiscordChatBridge extends JavaPlugin {
         if (dcbConfig.getConfigBoolean("system.starting-message.enable")) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 String message = dcbConfig.getConfigString("system.starting-message.message");
-                message = message.replace("{servername}", getConfig().getConfigString("server-name"));
+                message = message.replace("{servername}", getaConfig().getConfigString("server-name"));
                 getDiscordCore().getDiscordBot().discordSendToChannel(dcbConfig.getConfigString("channel-id"), message);
             }, 0L);
         }
@@ -98,7 +98,7 @@ public class DiscordChatBridge extends JavaPlugin {
         if (dcbConfig.getConfigBoolean("presence-player-count")) {
             taskID = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
                 if (getDiscordCore().getDiscordBot().jda.getStatus() == JDA.Status.CONNECTED) {
-                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(plugin.getConfig().getConfigString("server-name") + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
+                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(plugin.getaConfig().getConfigString("server-name") + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
                 }
 
 
@@ -127,7 +127,8 @@ public class DiscordChatBridge extends JavaPlugin {
         log.log(level, "[" + pluginName + "] " + message);
     }
 
-    public DCBConfig getConfig() {
+
+    public DCBConfig getaConfig() {
         return dcbConfig;
     }
 
@@ -138,10 +139,10 @@ public class DiscordChatBridge extends JavaPlugin {
     protected void handleDiscordCoreShutdown() {
         //Discord Shutdown Message
         shutdown = true;
-        if (getConfig().getConfigBoolean("system.shutdown-message.enable")) {
-            String message = getConfig().getConfigString("system.shutdown-message.message");
-            message = message.replace("{servername}", getConfig().getConfigString("server-name"));
-            TextChannel textChannel = this.discordCore.getDiscordBot().jda.getTextChannelById(plugin.getConfig().getConfigString("channel-id"));
+        if (getaConfig().getConfigBoolean("system.shutdown-message.enable")) {
+            String message = getaConfig().getConfigString("system.shutdown-message.message");
+            message = message.replace("{servername}", getaConfig().getConfigString("server-name"));
+            TextChannel textChannel = this.discordCore.getDiscordBot().jda.getTextChannelById(plugin.getaConfig().getConfigString("channel-id"));
             textChannel.sendMessage(message).complete();
         }
     }
