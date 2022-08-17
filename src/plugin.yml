@@ -1,7 +1,8 @@
 name: DiscordChatBridge
 authors:
   - JohnyMuffin
-version: 2.0.5
+  - Owen2k6
+version: 2.0.6
 main: com.johnymuffin.beta.discordchatbridge.DiscordChatBridge
 softdepend:
   - DiscordCore
