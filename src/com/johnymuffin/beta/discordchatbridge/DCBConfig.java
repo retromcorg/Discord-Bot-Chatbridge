@@ -26,6 +26,7 @@ public class DCBConfig extends Configuration {
         generateConfigOption("message.join-message", "**%username%** Has Joined The Game [%onlineCount%/%maxCount%]");
         generateConfigOption("message.quit-message", "**%username%** Has Quit The Game [%onlineCount%/%maxCount%]");
         generateConfigOption("message.require-link", "Sorry, in order to chat from Discord, you must link your in-game account to Discord. You can begin this process by running !link in the bot commands channel.");
+        generateConfigOption("message.allow-chat-colors", true);
         //Shutdown & Starting messages
         generateConfigOption("system.shutdown-message.enable", true);
         generateConfigOption("system.shutdown-message.message", ":no_entry_sign: {servername} is shutting down.");
