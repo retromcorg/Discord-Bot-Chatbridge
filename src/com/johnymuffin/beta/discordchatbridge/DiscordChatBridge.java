@@ -98,7 +98,11 @@ public class DiscordChatBridge extends JavaPlugin {
         if (dcbConfig.getConfigBoolean("presence-player-count")) {
             taskID = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
                 if (getDiscordCore().getDiscordBot().jda.getStatus() == JDA.Status.CONNECTED) {
-                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(plugin.getConfig().getConfigString("server-name") + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
+                    String bktString = dcbConfig.getConfigString("presence-message");
+                    bktString = bktString.replace("{servername}", plugin.getConfig().getConfigString("server-name"));
+                    bktString = bktString.replace("{onlineCount}", String.valueOf(Bukkit.getServer().getOnlinePlayers().length));
+                    bktString = bktString.replace("{maxOnlineCount}", String.valueOf(Bukkit.getServer().getMaxPlayers()));
+                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(bktString));
                 }
 
 
