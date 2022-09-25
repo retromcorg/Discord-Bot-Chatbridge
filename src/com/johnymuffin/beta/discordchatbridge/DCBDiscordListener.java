@@ -82,14 +82,17 @@ public class DCBDiscordListener extends ListenerAdapter {
                 }
             }
 
+            String dmsg = event.getMessage().getContentDisplay();
+            if (plugin.getConfig().getConfigBoolean("message.allow-chat-colors")) {
+                dmsg = dmsg.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            } else {
+                dmsg = ChatColor.stripColor(dmsg);
+            }
+            
             String chatMessage = plugin.getConfig().getConfigString("message.discord-chat-message");
             chatMessage = chatMessage.replace("%messageAuthor%", displayName);
-            chatMessage = chatMessage.replace("%message%", event.getMessage().getContentDisplay());
-            if (plugin.getConfig().getConfigBoolean("message.allow-chat-colors")) {
-                chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
-            } else {
-                chatMessage = ChatColor.stripColor(chatMessage);
-            }
+            chatMessage = chatMessage.replace("%message%", dmsg);
+            chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
             Bukkit.getServer().broadcastMessage(chatMessage);
             return;
         }
