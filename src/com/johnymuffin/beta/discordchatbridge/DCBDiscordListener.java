@@ -83,9 +83,8 @@ public class DCBDiscordListener extends ListenerAdapter {
             }
 
             String dmsg = event.getMessage().getContentDisplay();
-            if (plugin.getConfig().getConfigBoolean("message.allow-chat-colors")) {
-                dmsg = dmsg.replaceAll("(&([a-f0-9]))", "\u00A7$2");
-            } else {
+            dmsg = dmsg.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            if (!plugin.getConfig().getConfigBoolean("message.allow-chat-colors")) {
                 dmsg = ChatColor.stripColor(dmsg);
             }
             
