@@ -52,7 +52,7 @@ public class DCBDiscordListener extends ListenerAdapter {
             eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
                     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
 
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;
         }
 
