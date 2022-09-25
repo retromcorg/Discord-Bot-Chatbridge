@@ -20,6 +20,7 @@ public class DCBConfig extends Configuration {
         generateConfigOption("server-name", "BetaServer");
         generateConfigOption("channel-id", "id");
         generateConfigOption("presence-player-count", true);
+        generateConfigOption("presence-message", "{servername} With {onlineCount} Players");
         generateConfigOption("online-command-enabled", true);
         generateConfigOption("message.discord-chat-message", "&f[&6Discord&f]&7 %messageAuthor%: %message%");
         generateConfigOption("message.game-chat-message", "**%messageAuthor%**: %message%");
