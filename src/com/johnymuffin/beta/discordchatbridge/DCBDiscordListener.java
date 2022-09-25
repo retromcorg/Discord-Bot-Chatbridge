@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 
 import java.awt.*;
 import java.util.Random;
@@ -84,7 +85,11 @@ public class DCBDiscordListener extends ListenerAdapter {
             String chatMessage = plugin.getConfig().getConfigString("message.discord-chat-message");
             chatMessage = chatMessage.replace("%messageAuthor%", displayName);
             chatMessage = chatMessage.replace("%message%", event.getMessage().getContentDisplay());
-            chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            if (plugin.getConfig().getConfigBoolean("message.allow-chat-colors")) {
+                chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            } else {
+                chatMessage = ChatColor.stripColor(chatMessage);
+            }
             Bukkit.getServer().broadcastMessage(chatMessage);
             return;
         }
