@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
 
 import java.awt.*;
 import java.util.Random;
@@ -51,7 +52,7 @@ public class DCBDiscordListener extends ListenerAdapter {
             eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
                     "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
 
-            event.getChannel().sendMessage(eb.build()).queue();
+            event.getChannel().sendMessageEmbeds(eb.build()).queue();
             return;
         }
 
@@ -81,9 +82,15 @@ public class DCBDiscordListener extends ListenerAdapter {
                 }
             }
 
+            String dmsg = event.getMessage().getContentDisplay();
+            dmsg = dmsg.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            if (!plugin.getConfig().getConfigBoolean("message.allow-chat-colors")) {
+                dmsg = ChatColor.stripColor(dmsg);
+            }
+            
             String chatMessage = plugin.getConfig().getConfigString("message.discord-chat-message");
             chatMessage = chatMessage.replace("%messageAuthor%", displayName);
-            chatMessage = chatMessage.replace("%message%", event.getMessage().getContentDisplay());
+            chatMessage = chatMessage.replace("%message%", dmsg);
             chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
             Bukkit.getServer().broadcastMessage(chatMessage);
             return;
