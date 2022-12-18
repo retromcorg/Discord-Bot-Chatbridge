@@ -5,6 +5,8 @@ import com.johnymuffin.discordcore.DiscordShutdownEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.bukkit.Bukkit;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
@@ -104,6 +106,14 @@ public class DiscordChatBridge extends JavaPlugin {
 
             }, 0L, 20 * 60);
         }
+
+        CommandListUpdateAction commands = getDiscordCore().getDiscordBot().jda.updateCommands();
+
+        commands.addCommands(
+                new CommandData("online", "List all online players.")
+        );
+
+        commands.queue();
 
     }
 

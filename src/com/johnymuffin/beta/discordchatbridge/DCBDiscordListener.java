@@ -2,8 +2,13 @@ package com.johnymuffin.beta.discordchatbridge;
 
 import com.johnymuffin.beta.discordauth.DiscordAuthentication;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.MessageBuilder;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
@@ -21,6 +26,50 @@ public class DCBDiscordListener extends ListenerAdapter {
 
 
     @Override
+    public void onSlashCommand(SlashCommandEvent event) {
+        if (event.getName().equals("online")) {
+            MessageBuilder messageBuilder = new MessageBuilder();
+
+
+            String onlineMessage = "**The online players are:** ";
+            if (Bukkit.getServer().getOnlinePlayers().length == 1) {
+                for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                    onlineMessage += p.getName();
+                }
+            } else {
+                for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+                    onlineMessage += p.getName() + ", ";
+                }
+            }
+            EmbedBuilder eb = new EmbedBuilder();
+            if(Bukkit.getServer().getOnlinePlayers().length == 0)
+            {
+                eb.setTitle(plugin.getConfig().getConfigString("server-name"), null);
+                eb.setColor(Color.red);
+                eb.setDescription("There are currently no players online.");
+                eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
+                        "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
+            }
+            else {
+                eb.setTitle(plugin.getConfig().getConfigString("server-name") + " Online Players", null);
+                if (Bukkit.getServer().getOnlinePlayers().length > 0) {
+                    int rnd = new Random().nextInt(Bukkit.getServer().getOnlinePlayers().length);
+                    Player player = Bukkit.getServer().getOnlinePlayers()[rnd];
+                    eb.setThumbnail("http://minotar.net/helm/" + player.getName() + "/100.png");
+                }
+                eb.setColor(Color.green);
+                eb.setDescription("There are currently **" + Bukkit.getServer().getOnlinePlayers().length
+                        + "** players online\n" + onlineMessage);
+                eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
+                        "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
+            }
+
+            messageBuilder.setEmbeds(eb.build());
+            event.reply(messageBuilder.build()).setEphemeral(true).queue();
+        }
+    }
+
+    @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         //Don't respond to bots
         if (event.getAuthor().isBot() || event.isWebhookMessage()) {
@@ -33,90 +82,10 @@ public class DCBDiscordListener extends ListenerAdapter {
 
         String gameBridgeChannelID = plugin.getConfig().getConfigString("channel-id");
         String[] messageCMD = event.getMessage().getContentRaw().split(" ");
-
-        //sorry for the mess of copy pasting the code into each if statement -Owen2k6
-        //Online Command
-        if (messageCMD[0].equalsIgnoreCase("!online") && plugin.getConfig().getConfigBoolean("online-command-enabled")) {
-
-            //Check for if its enabled.
-            if (plugin.getConfig().getConfigBoolean("bot-command-channel-enabled")) {
-                //Does it match?
-                if (Objects.equals(plugin.getConfig().getConfigString("bot-command-channel-id"), event.getChannel().getId())) {
-                    //begin Online Command Response
-                    String onlineMessage = "**The online players are:** ";
-                    for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                        onlineMessage += p.getName() + ", ";
-                    }
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle(plugin.getConfig().getConfigString("server-name") + " Online Players", null);
-                    if (Bukkit.getServer().getOnlinePlayers().length > 0) {
-                        int rnd = new Random().nextInt(Bukkit.getServer().getOnlinePlayers().length);
-                        Player player = Bukkit.getServer().getOnlinePlayers()[rnd];
-                        eb.setThumbnail("http://minotar.net/helm/" + player.getName() + "/100.png");
-                    }
-                    eb.setColor(Color.red);
-                    eb.setDescription("There are currently **" + Bukkit.getServer().getOnlinePlayers().length
-                            + "** players online\n" + onlineMessage);
-                    eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
-                            "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
-
-                    event.getChannel().sendMessage(eb.build()).queue();
-                    return;
-                }
-                if (plugin.getConfig().getConfigString("bot-command-channel-id").isEmpty() || Objects.equals(plugin.getConfig().getConfigString("bot-command-channel-id"), "id")) {
-                    Bukkit.getLogger().warning("You appear to have forgotten to add a channel ID. go to the config and add an ID or disable the bot command channel limiter");
-                    Bukkit.getLogger().info("Will proceed like the feature is disabled.");
-                    //begin Online Command Response
-                    String onlineMessage = "**The online players are:** ";
-                    for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                        onlineMessage += p.getName() + ", ";
-                    }
-                    EmbedBuilder eb = new EmbedBuilder();
-                    eb.setTitle(plugin.getConfig().getConfigString("server-name") + " Online Players", null);
-                    if (Bukkit.getServer().getOnlinePlayers().length > 0) {
-                        int rnd = new Random().nextInt(Bukkit.getServer().getOnlinePlayers().length);
-                        Player player = Bukkit.getServer().getOnlinePlayers()[rnd];
-                        eb.setThumbnail("http://minotar.net/helm/" + player.getName() + "/100.png");
-                    }
-                    eb.setColor(Color.red);
-                    eb.setDescription("There are currently **" + Bukkit.getServer().getOnlinePlayers().length
-                            + "** players online\n" + onlineMessage);
-                    eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
-                            "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
-
-                    event.getChannel().sendMessage(eb.build()).queue();
-                    return;
-                }
-
-            }
-            //Check for if it's not enabled
-            if (!plugin.getConfig().getConfigBoolean("bot-command-channel-enabled")) {
-                //begin Online Command Response
-                String onlineMessage = "**The online players are:** ";
-                for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                    onlineMessage += p.getName() + ", ";
-                }
-                EmbedBuilder eb = new EmbedBuilder();
-                eb.setTitle(plugin.getConfig().getConfigString("server-name") + " Online Players", null);
-                if (Bukkit.getServer().getOnlinePlayers().length > 0) {
-                    int rnd = new Random().nextInt(Bukkit.getServer().getOnlinePlayers().length);
-                    Player player = Bukkit.getServer().getOnlinePlayers()[rnd];
-                    eb.setThumbnail("http://minotar.net/helm/" + player.getName() + "/100.png");
-                }
-                eb.setColor(Color.red);
-                eb.setDescription("There are currently **" + Bukkit.getServer().getOnlinePlayers().length
-                        + "** players online\n" + onlineMessage);
-                eb.setFooter("https://github.com/RhysB/Discord-Bot-Chatbridge",
-                        "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png");
-
-                event.getChannel().sendMessage(eb.build()).queue();
-                return;
-            }
-        }
-
         //Is the message in the game bridge channel
         if (event.getChannel().getId().equalsIgnoreCase(gameBridgeChannelID)) {
             String displayName = null;
+            String dmsg = event.getMessage().getContentRaw();
 
             if (plugin.getConfig().getConfigBoolean("authentication.enabled")) {
                 DiscordAuthentication authPlugin = (DiscordAuthentication) Bukkit.getServer().getPluginManager().getPlugin("DiscordAuthentication");
