@@ -5,6 +5,8 @@ import com.johnymuffin.discordcore.DiscordShutdownEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.requests.restaction.CommandListUpdateAction;
 import org.bukkit.Bukkit;
 import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
@@ -90,7 +92,7 @@ public class DiscordChatBridge extends JavaPlugin {
         if (dcbConfig.getConfigBoolean("system.starting-message.enable")) {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 String message = dcbConfig.getConfigString("system.starting-message.message");
-                message = message.replace("{servername}", getaConfig().getConfigString("server-name"));
+                message = message.replace("{servername}", getConfig().getConfigString("server-name"));
                 getDiscordCore().getDiscordBot().discordSendToChannel(dcbConfig.getConfigString("channel-id"), message);
             }, 0L);
         }
@@ -98,12 +100,20 @@ public class DiscordChatBridge extends JavaPlugin {
         if (dcbConfig.getConfigBoolean("presence-player-count")) {
             taskID = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
                 if (getDiscordCore().getDiscordBot().jda.getStatus() == JDA.Status.CONNECTED) {
-                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(plugin.getaConfig().getConfigString("server-name") + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
+                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(plugin.getConfig().getConfigString("server-name") + " With " + Bukkit.getServer().getOnlinePlayers().length + " Players"));
                 }
 
 
             }, 0L, 20 * 60);
         }
+
+        CommandListUpdateAction commands = getDiscordCore().getDiscordBot().jda.updateCommands();
+
+        commands.addCommands(
+                new CommandData("online", "List all online players.")
+        );
+
+        commands.queue();
 
     }
 
@@ -128,7 +138,7 @@ public class DiscordChatBridge extends JavaPlugin {
     }
 
 
-    public DCBConfig getaConfig() {
+    public DCBConfig getConfig() {
         return dcbConfig;
     }
 
@@ -139,10 +149,10 @@ public class DiscordChatBridge extends JavaPlugin {
     protected void handleDiscordCoreShutdown() {
         //Discord Shutdown Message
         shutdown = true;
-        if (getaConfig().getConfigBoolean("system.shutdown-message.enable")) {
-            String message = getaConfig().getConfigString("system.shutdown-message.message");
-            message = message.replace("{servername}", getaConfig().getConfigString("server-name"));
-            TextChannel textChannel = this.discordCore.getDiscordBot().jda.getTextChannelById(plugin.getaConfig().getConfigString("channel-id"));
+        if (getConfig().getConfigBoolean("system.shutdown-message.enable")) {
+            String message = getConfig().getConfigString("system.shutdown-message.message");
+            message = message.replace("{servername}", getConfig().getConfigString("server-name"));
+            TextChannel textChannel = this.discordCore.getDiscordBot().jda.getTextChannelById(plugin.getConfig().getConfigString("channel-id"));
             textChannel.sendMessage(message).complete();
         }
     }
