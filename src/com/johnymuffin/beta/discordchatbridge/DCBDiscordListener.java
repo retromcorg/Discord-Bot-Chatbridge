@@ -139,6 +139,17 @@ public class DCBDiscordListener extends ListenerAdapter {
                     displayName = event.getAuthor().getName();
                 }
             }
+
+            String dmsg = event.getMessage().getContentDisplay();
+            dmsg = dmsg.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            if (!plugin.getaConfig().getConfigBoolean("message.allow-chat-colors")) {
+                dmsg = ChatColor.stripColor(dmsg);
+            }
+
+            if (dmsg.length() > 200) {
+                dmsg = dmsg.substring(0, 200);
+            }
+            
             String chatMessage = plugin.getaConfig().getConfigString("message.discord-chat-message");
             chatMessage = chatMessage.replace("%messageAuthor%", displayName);
             chatMessage = chatMessage.replace("%message%", dmsg);
