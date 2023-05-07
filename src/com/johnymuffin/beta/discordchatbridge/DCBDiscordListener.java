@@ -122,7 +122,7 @@ public class DCBDiscordListener extends ListenerAdapter {
                 DiscordAuthentication authPlugin = (DiscordAuthentication) Bukkit.getServer().getPluginManager().getPlugin("DiscordAuthentication");
                 if (plugin.getaConfig().getConfigBoolean("authentication.discord.only-allow-linked-users")) {
                     if (!authPlugin.getData().isDiscordIDAlreadyLinked(event.getAuthor().getId())) {
-                        event.getChannel().sendMessage(plugin.getConfig().getString("message.require-link")).queue();
+                        event.getChannel().sendMessage(plugin.getaConfig().getString("message.require-link")).queue();
                         return;
                     }
                 }
@@ -139,6 +139,17 @@ public class DCBDiscordListener extends ListenerAdapter {
                     displayName = event.getAuthor().getName();
                 }
             }
+
+            String dmsg = event.getMessage().getContentDisplay();
+            dmsg = dmsg.replaceAll("(&([a-f0-9]))", "\u00A7$2");
+            if (!plugin.getaConfig().getConfigBoolean("message.allow-chat-colors")) {
+                dmsg = ChatColor.stripColor(dmsg);
+            }
+
+            if (dmsg.length() > 200) {
+                dmsg = dmsg.substring(0, 200);
+            }
+            
             String chatMessage = plugin.getaConfig().getConfigString("message.discord-chat-message");
             chatMessage = chatMessage.replace("%messageAuthor%", displayName);
             chatMessage = chatMessage.replace("%message%", dmsg);
