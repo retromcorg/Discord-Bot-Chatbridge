@@ -122,7 +122,7 @@ public class DCBDiscordListener extends ListenerAdapter {
                 DiscordAuthentication authPlugin = (DiscordAuthentication) Bukkit.getServer().getPluginManager().getPlugin("DiscordAuthentication");
                 if (plugin.getaConfig().getConfigBoolean("authentication.discord.only-allow-linked-users")) {
                     if (!authPlugin.getData().isDiscordIDAlreadyLinked(event.getAuthor().getId())) {
-                        event.getChannel().sendMessage(plugin.getConfig().getString("message.require-link")).queue();
+                        event.getChannel().sendMessage(plugin.getaConfig().getString("message.require-link")).queue();
                         return;
                     }
                 }
