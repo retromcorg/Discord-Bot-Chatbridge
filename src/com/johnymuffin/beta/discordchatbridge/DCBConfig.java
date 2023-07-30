@@ -25,7 +25,7 @@ public class DCBConfig extends Configuration {
         generateConfigOption("presence-player-count", true);
         generateConfigOption("presence-message", "{servername} With {onlineCount} Players");
         generateConfigOption("online-command-enabled", true);
-        generateConfigOption("message.discord-chat-message", "&f[&6Discord&f]&7 %messageAuthor%: %message%");
+        generateConfigOption("message.discord-chat-message", "&b[D] &f%prefix%%messageAuthor%: %message%");
         generateConfigOption("message.game-chat-message", "**%messageAuthor%**: %message%");
         generateConfigOption("message.join-message", "**%username%** Has Joined The Game [%onlineCount%/%maxCount%]");
         generateConfigOption("message.quit-message", "**%username%** Has Quit The Game [%onlineCount%/%maxCount%]");
@@ -40,6 +40,10 @@ public class DCBConfig extends Configuration {
         generateConfigOption("authentication.enabled", false);
         generateConfigOption("authentication.discord.only-allow-linked-users", true);
         generateConfigOption("authentication.discord.use-in-game-names-if-available", true);
+
+        //JohnyPerms Prefix Support
+        generateConfigOption("johnyperms-prefix-support.enabled", false);
+        generateConfigOption("johnyperms-prefix-support.info", "This option when enabled will display a users prefix from JohnyPerms in front of their name in chat when they send a message from Discord.");
 
         //Webhook
         generateConfigOption("webhook.use-webhook", false);

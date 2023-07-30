@@ -19,20 +19,20 @@ public class DCBGameListener extends PlayerListener {
 
     @Override
     public void onPlayerJoin(PlayerJoinEvent event) {
-        String chatMessage = plugin.getaConfig().getConfigString("message.join-message");
+        String chatMessage = plugin.getConfig().getConfigString("message.join-message");
         chatMessage = chatMessage.replace("%username%", event.getPlayer().getName());
         chatMessage = chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length));
         chatMessage = chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
-        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getaConfig().getConfigString("channel-id"), chatMessage);
+        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
     }
 
     @Override
     public void onPlayerQuit(PlayerQuitEvent event) {
-        String chatMessage = plugin.getaConfig().getConfigString("message.quit-message");
+        String chatMessage = plugin.getConfig().getConfigString("message.quit-message");
         chatMessage = chatMessage.replace("%username%", event.getPlayer().getName());
         chatMessage = chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length - 1));
         chatMessage = chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
-        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getaConfig().getConfigString("channel-id"), chatMessage);
+        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class DCBGameListener extends PlayerListener {
             return;
         }
 
-        if (plugin.getaConfig().getConfigBoolean("webhook.use-webhook")) {
-            final DiscordWebhook webhookMessage = new DiscordWebhook(plugin.getaConfig().getConfigString("webhook.url"));
+        if (plugin.getConfig().getConfigBoolean("webhook.use-webhook")) {
+            final DiscordWebhook webhookMessage = new DiscordWebhook(plugin.getConfig().getConfigString("webhook.url"));
             webhookMessage.setUsername(event.getPlayer().getName());
             webhookMessage.setContent(sanitizeMessage(event.getMessage()));
             webhookMessage.setAvatarUrl("http://minotar.net/helm/" + event.getPlayer().getName() + "/100.png");
@@ -56,11 +56,11 @@ public class DCBGameListener extends PlayerListener {
             }, 0L);
 
         } else {
-            String chatMessage = plugin.getaConfig().getConfigString("message.game-chat-message");
+            String chatMessage = plugin.getConfig().getConfigString("message.game-chat-message");
             chatMessage = chatMessage.replace("%messageAuthor%", event.getPlayer().getName());
             chatMessage = chatMessage.replace("%message%", event.getMessage());
             chatMessage = sanitizeMessage(chatMessage);
-            plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getaConfig().getConfigString("channel-id"), chatMessage);
+            plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
         }
     }
 
