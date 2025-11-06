@@ -1,4 +1,4 @@
-package com.johnymuffin.beta.discordchatbridge;
+package main.java.com.johnymuffin.beta.discordchatbridge;
 
 import com.johnymuffin.discordcore.DiscordCore;
 import com.johnymuffin.discordcore.DiscordShutdownEvent;

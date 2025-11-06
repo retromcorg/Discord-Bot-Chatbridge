@@ -1,4 +1,4 @@
-package com.johnymuffin.beta.discordchatbridge;
+package main.java.com.johnymuffin.beta.discordchatbridge;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.config.Configuration;

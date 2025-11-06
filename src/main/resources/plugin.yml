@@ -3,7 +3,7 @@ authors:
   - JohnyMuffin
   - Owen2k6
 version: 2.0.7
-main: com.johnymuffin.beta.discordchatbridge.DiscordChatBridge
+main: main.java.com.johnymuffin.beta.discordchatbridge.DiscordChatBridge
 softdepend:
   - DiscordCore
   - DiscordAuthentication
