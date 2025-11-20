@@ -1,4 +1,4 @@
-package main.java.com.johnymuffin.beta.discordchatbridge;
+package com.johnymuffin.beta.discordchatbridge;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.player.PlayerChatEvent;
