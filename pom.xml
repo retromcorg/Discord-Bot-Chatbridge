@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.retromc</groupId>
+    <artifactId>discord-chat-bridge</artifactId>
+    <version>2.0.8</version>
+
+    <packaging>jar</packaging>
+
+    <name>Discord-Chat-Bridge</name>
+    <description>A plugin that bridges discord chats ingame</description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <kotlin.version>2.2.0</kotlin.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>johnymuffin-nexus-releases</id>
+            <url>https://repository.johnymuffin.com/repository/maven-public/</url>
+        </repository>
+        <repository>
+            <id>johnymuffin</id>
+            <url>https://repository.johnymuffin.com</url>
+        </repository>
+
+        <repository>
+            <id>johnymuffin-nexus-snapshots</id>
+            <url>https://repository.johnymuffin.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.johnymuffin</groupId>
+            <artifactId>Discord-Bot-Core</artifactId>
+            <version>1.1.3</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Discord-Bot-Core.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.johnymuffin</groupId>
+            <artifactId>JohnyPerms</artifactId>
+            <version>1.0.1</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Johnyperms-1.0.1.jar</systemPath>
+        </dependency>
+
+<!--                <dependency>-->
+<!--                    <groupId>com.legacyminecraft.poseidon</groupId>-->
+<!--                    <artifactId>poseidon-craftbukkit</artifactId>-->
+<!--                    <version>1.1.10</version>-->
+<!--                    <scope>system</scope>-->
+<!--                    <systemPath>${project.basedir}/lib/project-poseidon-1.1.10.jar</systemPath>-->
+<!--                </dependency>-->
+
+        <dependency>
+            <groupId>com.legacyminecraft.poseidon</groupId>
+            <artifactId>poseidon-craftbukkit</artifactId>
+            <version>1.1.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.johnymuffin.beta</groupId>
+            <artifactId>discordauth</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.earth2me</groupId>
+            <artifactId>essentials</artifactId>
+            <version>2.6.8</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.johnymuffin</groupId>-->
+<!--            <artifactId>Essentials</artifactId>-->
+<!--            <version>2.7.0</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${project.basedir}/lib/essentials-2.7.0.jar</systemPath>-->
+<!--        </dependency>-->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+</project>
