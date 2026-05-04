@@ -2,8 +2,9 @@ name: DiscordChatBridge
 authors:
   - JohnyMuffin
   - Owen2k6
-version: 2.0.7
+version: ${project.version}
 main: com.johnymuffin.beta.discordchatbridge.DiscordChatBridge
 softdepend:
   - DiscordCore
   - DiscordAuthentication
+  - RetroBridge

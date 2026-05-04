@@ -41,9 +41,9 @@ public class DCBConfig extends Configuration {
         generateConfigOption("authentication.discord.only-allow-linked-users", true);
         generateConfigOption("authentication.discord.use-in-game-names-if-available", true);
 
-        //JohnyPerms Prefix Support
-        generateConfigOption("johnyperms-prefix-support.enabled", false);
-        generateConfigOption("johnyperms-prefix-support.info", "This option when enabled will display a users prefix from JohnyPerms in front of their name in chat when they send a message from Discord.");
+        //RetroBridge Prefix Support
+        generateConfigOption("retrobridge-prefix-support.enabled", false);
+        generateConfigOption("retrobridge-prefix-support.info", "This option when enabled will display a user's prefix from RetroBridge in front of their name in chat when they send a message from Discord.");
 
         //Webhook
         generateConfigOption("webhook.use-webhook", false);

@@ -1,13 +1,13 @@
 package com.johnymuffin.beta.discordchatbridge;
 
 import com.johnymuffin.beta.discordauth.DiscordAuthentication;
-import com.johnymuffin.jperms.beta.JohnyPerms;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.retromc.retrobridge.bridge.permission.PermissionBridge;
 
 import java.awt.*;
 import java.util.Objects;
@@ -17,6 +17,7 @@ import java.util.logging.Level;
 
 public class DCBDiscordListener extends ListenerAdapter {
     private DiscordChatBridge plugin;
+    private final RetroBridgeAccess retroBridgeAccess = new RetroBridgeAccess();
 
     public DCBDiscordListener(DiscordChatBridge plugin) {
         this.plugin = plugin;
@@ -127,7 +128,7 @@ public class DCBDiscordListener extends ListenerAdapter {
                 DiscordAuthentication authPlugin = (DiscordAuthentication) Bukkit.getServer().getPluginManager().getPlugin("DiscordAuthentication");
 
                 //Get playerUUID from DiscordID if possible
-                if(authPlugin.getData().isDiscordIDAlreadyLinked(event.getAuthor().getId())) {
+                if (authPlugin.getData().isDiscordIDAlreadyLinked(event.getAuthor().getId())) {
                     playerUUID = UUID.fromString(authPlugin.getData().getUUIDFromDiscordID(event.getAuthor().getId()));
                 }
 
@@ -143,20 +144,20 @@ public class DCBDiscordListener extends ListenerAdapter {
             }
 
             //Check for prefix
-            if (this.plugin.getConfig().getConfigBoolean("johnyperms-prefix-support.enabled")) {
+            if (isRetroBridgePrefixSupportEnabled()) {
                 if (playerUUID != null) {
-                    if(Bukkit.getPluginManager().isPluginEnabled("JPerms")) {
-                        JohnyPerms jperms = (JohnyPerms) Bukkit.getServer().getPluginManager().getPlugin("JPerms");
-                        //Attempt to get prefix from JohnyPerms for user then group
-                        prefix = jperms.getUser(playerUUID).getPrefix();
-                        if(prefix == null) {
-                            prefix = jperms.getUser(playerUUID).getGroup().getPrefix();
+                    if (retroBridgeAccess.isAvailable()) {
+                        PermissionBridge permissionBridge = retroBridgeAccess.getPermissionBridge();
+                        if (permissionBridge != null) {
+                            prefix = permissionBridge.getPrefix(playerUUID);
+                        } else {
+                            this.plugin.logger(Level.WARNING, "RetroBridge prefix support is enabled but no permission bridge is available.");
                         }
                     } else {
-                        this.plugin.logger(Level.WARNING, "JohnyPerms prefix support is enabled but the plugin is not installed or enabled.");
+                        this.plugin.logger(Level.WARNING, "RetroBridge prefix support is enabled but RetroBridge is not installed or enabled.");
                     }
                 } else {
-                    this.plugin.logger(Level.WARNING, "JohnyPerms prefix support is enabled but the player UUID is null. This is likely due to the DiscordAuthentication plugin not being installed or enabled.");
+                    this.plugin.logger(Level.WARNING, "RetroBridge prefix support is enabled but the player UUID is null. This is likely due to the DiscordAuthentication plugin not being installed or enabled.");
                 }
             }
 
@@ -191,6 +192,10 @@ public class DCBDiscordListener extends ListenerAdapter {
         }
 
 
+    }
+
+    private boolean isRetroBridgePrefixSupportEnabled() {
+        return this.plugin.getConfig().getConfigBoolean("retrobridge-prefix-support.enabled");
     }
 
 
