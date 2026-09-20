@@ -5,6 +5,6 @@ authors:
 version: ${project.version}
 main: com.johnymuffin.beta.discordchatbridge.DiscordChatBridge
 softdepend:
-  - DiscordCore
+  - DiscordCore-6
   - DiscordAuthentication
   - RetroBridge

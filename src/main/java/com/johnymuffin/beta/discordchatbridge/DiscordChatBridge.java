@@ -1,15 +1,13 @@
 package com.johnymuffin.beta.discordchatbridge;
 
-import com.johnymuffin.discordcore.DiscordCore;
-import com.johnymuffin.discordcore.DiscordShutdownEvent;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import org.bukkit.Bukkit;
-import org.bukkit.event.CustomEventListener;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.retromc.discordcore.v6.DiscordCorePlugin;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,7 +18,7 @@ public class DiscordChatBridge extends JavaPlugin {
     private Logger log;
     private String pluginName;
     private PluginDescriptionFile pdf;
-    private DiscordCore discordCore;
+    private DiscordCorePlugin discordCore;
     private DCBConfig dcbConfig;
     //Other plugin stuff
     private DCBDiscordListener discordListener; //Discord Listener
@@ -36,7 +34,7 @@ public class DiscordChatBridge extends JavaPlugin {
         pluginName = pdf.getName();
         log.info("[" + pluginName + "] Is Loading, Version: " + pdf.getVersion());
 
-        if (!Bukkit.getServer().getPluginManager().isPluginEnabled("DiscordCore")) {
+        if (!Bukkit.getServer().getPluginManager().isPluginEnabled("DiscordCore-6")) {
             log.info("}---------------ERROR---------------{");
             log.info("Discord Chat Bridge Requires Discord Core");
             log.info("Download it at: https://github.com/RhysB/Discord-Bot-Core");
@@ -72,17 +70,15 @@ public class DiscordChatBridge extends JavaPlugin {
         }
 
         //Discord Core
-        discordCore = (DiscordCore) Bukkit.getServer().getPluginManager().getPlugin("DiscordCore");
+        discordCore = (DiscordCorePlugin) Bukkit.getServer().getPluginManager().getPlugin("DiscordCore-6");
         //Discord Listener
         discordListener = new DCBDiscordListener(plugin);
-        discordCore.getDiscordBot().jda.addEventListener(discordListener);
+        discordCore.getDiscordBot().getJDA().addEventListener(discordListener);
         //Discord Game Bridge
         final DCBGameListener gameListener = new DCBGameListener(plugin);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_JOIN, gameListener, Event.Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_QUIT, gameListener, Event.Priority.Monitor, this);
         getServer().getPluginManager().registerEvent(Event.Type.PLAYER_CHAT, gameListener, Event.Priority.Highest, this);
-        final ShutdownListener shutdownListener = new ShutdownListener();
-        getServer().getPluginManager().registerEvent(Event.Type.CUSTOM_EVENT, shutdownListener, Event.Priority.Normal, plugin);
 
         enabled = true;
 
@@ -91,18 +87,19 @@ public class DiscordChatBridge extends JavaPlugin {
             Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
                 String message = dcbConfig.getConfigString("system.starting-message.message");
                 message = message.replace("{servername}", getConfig().getConfigString("server-name"));
-                getDiscordCore().getDiscordBot().discordSendToChannel(dcbConfig.getConfigString("channel-id"), message);
+                getDiscordCore().getDiscordBot().sendMessageToChannel(dcbConfig.getConfigString("channel-id"), message);
             }, 0L);
         }
 
         if (dcbConfig.getConfigBoolean("presence-player-count")) {
             taskID = this.getServer().getScheduler().scheduleSyncRepeatingTask(this, () -> {
-                if (getDiscordCore().getDiscordBot().jda.getStatus() == JDA.Status.CONNECTED) {
+                final JDA jda = getDiscordCore().getDiscordBot().getJDA();
+                if (jda != null && jda.getStatus() == JDA.Status.CONNECTED) {
                     String bktString = dcbConfig.getConfigString("presence-message");
                     bktString = bktString.replace("{servername}", plugin.getConfig().getConfigString("server-name"));
                     bktString = bktString.replace("{onlineCount}", String.valueOf(Bukkit.getServer().getOnlinePlayers().length));
                     bktString = bktString.replace("{maxOnlineCount}", String.valueOf(Bukkit.getServer().getMaxPlayers()));
-                    getDiscordCore().getDiscordBot().jda.getPresence().setActivity(Activity.playing(bktString));
+                    jda.getPresence().setActivity(Activity.playing(bktString));
                 }
 
 
@@ -120,8 +117,14 @@ public class DiscordChatBridge extends JavaPlugin {
             }
 
 
-            discordCore.getDiscordBot().jda.removeEventListener(discordListener);
-            Bukkit.getServer().getScheduler().cancelTask(taskID);
+            final JDA jda = getUsableJDA();
+            if (jda != null) {
+                jda.removeEventListener(discordListener);
+            }
+            if (taskID != null) {
+                Bukkit.getServer().getScheduler().cancelTask(taskID);
+                taskID = null;
+            }
         }
         logger(Level.INFO, "Has been disabled.");
     }
@@ -136,37 +139,42 @@ public class DiscordChatBridge extends JavaPlugin {
         return dcbConfig;
     }
 
-    public DiscordCore getDiscordCore() {
+    public DiscordCorePlugin getDiscordCore() {
         return discordCore;
+    }
+
+    private JDA getUsableJDA() {
+        if (discordCore == null) {
+            return null;
+        }
+        final JDA jda = discordCore.getDiscordBot().getJDA();
+        if (jda == null) {
+            return null;
+        }
+        final JDA.Status status = jda.getStatus();
+        if (status == JDA.Status.SHUTTING_DOWN || status == JDA.Status.SHUTDOWN) {
+            return null;
+        }
+        return jda;
     }
 
     protected void handleDiscordCoreShutdown() {
         //Discord Shutdown Message
         shutdown = true;
         if (getConfig().getConfigBoolean("system.shutdown-message.enable")) {
+            final JDA jda = getUsableJDA();
+            if (jda == null) {
+                logger(Level.WARNING, "Unable to send the shutdown message as the Discord bot is already offline.");
+                return;
+            }
             String message = getConfig().getConfigString("system.shutdown-message.message");
             message = message.replace("{servername}", getConfig().getConfigString("server-name"));
-            TextChannel textChannel = this.discordCore.getDiscordBot().jda.getTextChannelById(plugin.getConfig().getConfigString("channel-id"));
+            TextChannel textChannel = jda.getTextChannelById(plugin.getConfig().getConfigString("channel-id"));
+            if (textChannel == null) {
+                logger(Level.WARNING, "Unable to send the shutdown message as the channel-id in the config couldn't be found.");
+                return;
+            }
             textChannel.sendMessage(message).complete();
         }
-    }
-
-
-    private class ShutdownListener extends CustomEventListener {
-
-        @Override
-        public void onCustomEvent(Event event) {
-            if (!(event instanceof DiscordShutdownEvent)) {
-                return;
-            }
-            if (shutdown) {
-                return;
-            }
-            handleDiscordCoreShutdown();
-            //Force disable this plugin first as it requires DiscordCore to function.
-            Bukkit.getServer().getPluginManager().disablePlugin(plugin);
-
-        }
-
     }
 }

@@ -23,7 +23,7 @@ public class DCBGameListener extends PlayerListener {
         chatMessage = chatMessage.replace("%username%", event.getPlayer().getName());
         chatMessage = chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length));
         chatMessage = chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
-        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
+        plugin.getDiscordCore().getDiscordBot().sendMessageToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class DCBGameListener extends PlayerListener {
         chatMessage = chatMessage.replace("%username%", event.getPlayer().getName());
         chatMessage = chatMessage.replace("%onlineCount%", String.valueOf(Bukkit.getServer().getOnlinePlayers().length - 1));
         chatMessage = chatMessage.replace("%maxCount%", String.valueOf(Bukkit.getServer().getMaxPlayers()));
-        plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
+        plugin.getDiscordCore().getDiscordBot().sendMessageToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class DCBGameListener extends PlayerListener {
             chatMessage = chatMessage.replace("%messageAuthor%", event.getPlayer().getName());
             chatMessage = chatMessage.replace("%message%", event.getMessage());
             chatMessage = sanitizeMessage(chatMessage);
-            plugin.getDiscordCore().getDiscordBot().discordSendToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
+            plugin.getDiscordCore().getDiscordBot().sendMessageToChannel(plugin.getConfig().getConfigString("channel-id"), chatMessage);
         }
     }
 
