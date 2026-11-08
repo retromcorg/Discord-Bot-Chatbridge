@@ -8,6 +8,7 @@ import org.retromc.retrobridge.bridge.afk.AFKBridge;
 import org.retromc.retrobridge.bridge.auth.AuthBridge;
 import org.retromc.retrobridge.bridge.economy.EconomyBridge;
 import org.retromc.retrobridge.bridge.fakequit.FakeQuitBridge;
+import org.retromc.retrobridge.bridge.ignore.IgnoreBridge;
 import org.retromc.retrobridge.bridge.permission.PermissionBridge;
 import org.retromc.retrobridge.bridge.vanish.VanishBridge;
 import org.retromc.retrobridge.bridge.whois.WhoisBridge;
@@ -103,5 +104,13 @@ public final class RetroBridgeAccess {
             return null;
         }
         return manager.getFakeQuitBridge();
+    }
+
+    public IgnoreBridge getIgnoreBridge() {
+        BridgeManager manager = getBridgeManager();
+        if (manager == null) {
+            return null;
+        }
+        return manager.getIgnoreBridge();
     }
 }
