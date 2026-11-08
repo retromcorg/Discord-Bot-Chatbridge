@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.retromc.retrobridge.bridge.ignore.IgnoreBridge;
 import org.retromc.retrobridge.bridge.permission.PermissionBridge;
 
 import java.awt.*;
@@ -187,8 +188,22 @@ public class DCBDiscordListener extends ListenerAdapter {
             chatMessage = chatMessage.replace("%message%", dmsg);
             chatMessage = chatMessage.replaceAll("(&([a-f0-9]))", "\u00A7$2");
             chatMessage = chatMessage.replace("%prefix%", prefix);
-            Bukkit.getServer().broadcastMessage(chatMessage);
-            return;
+
+            UUID finalPlayerUUID = playerUUID;
+            String finalChatMessage = chatMessage;
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+                //Check for players who are ignoring the sender
+                if (finalPlayerUUID != null && retroBridgeAccess.isAvailable()) {
+                    IgnoreBridge ignoreBridge = retroBridgeAccess.getIgnoreBridge();
+                    for (Player recipient : Bukkit.getServer().getOnlinePlayers()) {
+                        if (!ignoreBridge.isIgnoring(recipient.getUniqueId(), finalPlayerUUID)) {
+                            recipient.sendMessage(finalChatMessage);
+                        }
+                    }
+                } else {
+                    Bukkit.getServer().broadcastMessage(finalChatMessage);
+                }
+            });
         }
 
 
